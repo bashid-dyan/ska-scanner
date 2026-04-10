@@ -9,40 +9,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .loader { border: 3px solid #e0e7ff; border-top: 3px solid #4f46e5; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; display: inline-block; }
+        .loader { border: 3px solid #dbeafe; border-top: 3px solid #2563eb; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.35s ease-out; }
-        .search-glow:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.12); border-color: #818cf8; }
+        .search-glow:focus { box-shadow: 0 0 0 3px rgba(59,130,246,0.15); border-color: #60a5fa; }
         .card-hover { transition: all 0.2s ease; }
-        .card-hover:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
-        .badge-berlaku { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-        .badge-expired { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .card-hover:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .badge-berlaku { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-expired { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
         .result-row { transition: background 0.15s ease; }
-        .result-row:hover { background: #f5f3ff; }
-        .btn-main { background: #4f46e5; transition: all 0.2s ease; }
-        .btn-main:hover { background: #4338ca; box-shadow: 0 2px 8px rgba(79,70,229,0.3); }
+        .result-row:hover { background: #eff6ff; }
+        .btn-main { background: linear-gradient(135deg, #2563eb, #3b82f6); transition: all 0.2s ease; }
+        .btn-main:hover { background: linear-gradient(135deg, #1d4ed8, #2563eb); box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
         .btn-main:disabled { opacity: 0.5; }
-        .header-bg { background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 50%, #ede9fe 100%); }
+        .header-bg { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 40%, #bfdbfe 100%); }
     </style>
 </head>
-<body class="bg-gray-50/50 min-h-screen flex flex-col">
+<body class="bg-blue-50/30 min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="header-bg border-b border-indigo-100/60">
+    <header class="header-bg border-b border-blue-200/50">
         <div class="max-w-6xl mx-auto px-6 py-5">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-5">
                     <img src="/static/logo-bpk.svg"
-                         alt="Logo BPK" class="w-16 h-16 object-contain">
+                         alt="Logo BPK" class="w-16 h-16 object-contain drop-shadow-sm">
                     <div>
-                        <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight leading-tight">Cek Sertifikat Keahlian</h1>
-                        <p class="text-indigo-500 text-sm font-medium mt-0.5">by Bashid Effendi</p>
+                        <h1 class="text-2xl font-extrabold text-blue-900 tracking-tight leading-tight">Cek Sertifikat Keahlian</h1>
+                        <p class="text-blue-500 text-sm font-semibold mt-0.5">by Bashid Effendi</p>
                     </div>
                 </div>
-                <div class="hidden sm:block text-right">
-                    <p class="text-[11px] text-gray-400">Sumber data</p>
-                    <p class="text-xs text-gray-500 font-medium">LPJK Kementerian PUPR</p>
+                <div class="hidden sm:flex items-center gap-2 bg-white/60 backdrop-blur px-4 py-2 rounded-xl border border-blue-100">
+                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    <div>
+                        <p class="text-[10px] text-blue-400 font-medium">Sumber data</p>
+                        <p class="text-xs text-blue-700 font-semibold">LPJK Kementerian PUPR</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,28 +54,28 @@
     <main class="flex-1 max-w-6xl mx-auto px-6 py-8 w-full">
 
         <!-- Search -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200/60 p-7 mb-8 fade-in">
-            <div class="flex items-center gap-2 mb-4">
-                <div class="w-7 h-7 bg-indigo-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <div class="bg-white rounded-2xl shadow-md border border-blue-100/50 p-7 mb-8 fade-in">
+            <div class="flex items-center gap-2.5 mb-4">
+                <div class="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <svg class="w-4.5 h-4.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </div>
-                <p class="text-sm font-semibold text-gray-700">Pencarian Tenaga Kerja Konstruksi</p>
+                <p class="text-sm font-bold text-gray-800">Pencarian Tenaga Kerja Konstruksi</p>
             </div>
             <form id="searchForm" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-                <div class="flex items-center gap-4 bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-200">
+                <div class="flex items-center gap-4 bg-blue-50/50 px-4 py-2.5 rounded-xl border border-blue-100">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="type" value="Nama" checked class="w-3.5 h-3.5 text-indigo-500 focus:ring-indigo-400">
-                        <span class="text-sm text-gray-600">Nama</span>
+                        <input type="radio" name="type" value="Nama" checked class="w-3.5 h-3.5 text-blue-600 focus:ring-blue-400">
+                        <span class="text-sm font-medium text-gray-600">Nama</span>
                     </label>
-                    <div class="w-px h-4 bg-gray-300"></div>
+                    <div class="w-px h-4 bg-blue-200"></div>
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="type" value="NIK" class="w-3.5 h-3.5 text-indigo-500 focus:ring-indigo-400">
-                        <span class="text-sm text-gray-600">NIK</span>
+                        <input type="radio" name="type" value="NIK" class="w-3.5 h-3.5 text-blue-600 focus:ring-blue-400">
+                        <span class="text-sm font-medium text-gray-600">NIK</span>
                     </label>
                 </div>
                 <input type="text" id="searchInput" name="q" placeholder="Ketik nama lengkap atau nomor NIK..."
-                    class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl outline-none text-sm search-glow transition bg-white">
-                <button type="submit" id="searchBtn" class="btn-main px-7 py-2.5 text-white rounded-xl font-semibold text-sm flex items-center gap-2 justify-center">
+                    class="flex-1 px-4 py-2.5 border border-blue-200/60 rounded-xl outline-none text-sm search-glow transition bg-white">
+                <button type="submit" id="searchBtn" class="btn-main px-7 py-2.5 text-white rounded-xl font-bold text-sm flex items-center gap-2 justify-center shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     Cari Data
                 </button>
@@ -82,38 +85,38 @@
         <!-- Loading -->
         <div id="loading" class="hidden text-center py-16 fade-in">
             <div class="loader mx-auto mb-4"></div>
-            <p class="text-gray-500 text-sm" id="loadingMsg">Mencari data...</p>
+            <p class="text-blue-500 text-sm font-medium" id="loadingMsg">Mencari data...</p>
         </div>
 
         <!-- Error -->
-        <div id="error" class="hidden bg-red-50 border border-red-100 rounded-xl p-4 mb-6">
+        <div id="error" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
             <div class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <p class="text-red-600 text-sm" id="errorMsg"></p>
+                <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <p class="text-red-600 text-sm font-medium" id="errorMsg"></p>
             </div>
         </div>
 
         <!-- Detail -->
         <div id="detailSection" class="hidden mb-8 fade-in">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
-                <div class="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4 flex justify-between items-center">
+            <div class="bg-white rounded-2xl shadow-md border border-blue-100/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 px-6 py-4 flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center backdrop-blur">
+                        <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                         </div>
                         <h3 id="detailTitle" class="text-sm font-bold text-white">Detail Tenaga Kerja</h3>
                     </div>
-                    <button onclick="closeDetail()" class="text-white/70 hover:text-white text-xs bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                    <button onclick="closeDetail()" class="text-white/80 hover:text-white text-xs bg-white/15 hover:bg-white/25 px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-medium">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                         Kembali
                     </button>
                 </div>
-                <div id="profileSection" class="p-6 border-b border-gray-100 bg-gray-50/30">
-                    <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.15em] mb-4">Informasi Profil</p>
+                <div id="profileSection" class="p-6 border-b border-blue-50 bg-blue-50/20">
+                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-[0.15em] mb-4">Informasi Profil</p>
                     <div id="profileData"></div>
                 </div>
                 <div id="certSection" class="p-6">
-                    <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.15em] mb-4">Daftar Sertifikat</p>
+                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-[0.15em] mb-4">Daftar Sertifikat</p>
                     <div id="certData"></div>
                 </div>
             </div>
@@ -121,23 +124,23 @@
 
         <!-- Results -->
         <div id="searchResults" class="hidden fade-in">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                    <p class="text-sm font-bold text-gray-700">Hasil Pencarian</p>
-                    <span id="resultCount" class="text-xs text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-semibold"></span>
+            <div class="bg-white rounded-2xl shadow-md border border-blue-100/50 overflow-hidden">
+                <div class="px-6 py-4 border-b border-blue-50 flex justify-between items-center bg-blue-50/30">
+                    <p class="text-sm font-bold text-gray-800">Hasil Pencarian</p>
+                    <span id="resultCount" class="text-xs text-blue-700 bg-blue-100 px-3 py-1 rounded-full font-bold"></span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
-                            <tr class="border-b border-gray-100 bg-gray-50/50">
-                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left w-12">No</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left">Nama</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left">NIK</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left">Lokasi</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center w-24"></th>
+                            <tr class="border-b border-blue-50 bg-blue-50/20">
+                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left w-12">No</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left">Nama</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left">NIK</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left">Lokasi</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-center w-24"></th>
                             </tr>
                         </thead>
-                        <tbody id="resultsBody" class="divide-y divide-gray-50"></tbody>
+                        <tbody id="resultsBody" class="divide-y divide-blue-50/50"></tbody>
                     </table>
                 </div>
             </div>
@@ -146,19 +149,19 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-200/60 mt-auto bg-white">
+    <footer class="border-t border-blue-100 mt-auto bg-white/80">
         <div class="max-w-6xl mx-auto px-6 py-5">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
                 <div class="flex items-center gap-3">
                     <img src="/static/logo-bpk.svg"
-                         alt="Logo BPK" class="w-9 h-9 object-contain opacity-50">
+                         alt="Logo BPK" class="w-9 h-9 object-contain opacity-40">
                     <div>
                         <p class="text-xs font-bold text-gray-600">Cek Sertifikat Keahlian</p>
                         <p class="text-[10px] text-gray-400">by Bashid Effendi</p>
                     </div>
                 </div>
                 <div class="text-center sm:text-right">
-                    <p class="text-[11px] text-gray-400">Data bersumber dari <a href="https://lpjk.pu.go.id" target="_blank" class="text-indigo-500 hover:text-indigo-600 font-medium transition">LPJK Kementerian PUPR</a></p>
+                    <p class="text-[11px] text-gray-400">Data bersumber dari <a href="https://lpjk.pu.go.id" target="_blank" class="text-blue-500 hover:text-blue-600 font-semibold transition">LPJK Kementerian PUPR</a></p>
                     <p class="text-[10px] text-gray-300 mt-0.5">Hanya untuk keperluan verifikasi. Data ditampilkan apa adanya.</p>
                 </div>
             </div>
@@ -195,10 +198,10 @@
 
             if (!data.results || data.results.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-14 text-center">
-                    <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <p class="text-gray-500 text-sm font-medium">Data tidak ditemukan</p>
+                    <p class="text-gray-600 text-sm font-semibold">Data tidak ditemukan</p>
                     <p class="text-gray-400 text-xs mt-1">Coba kata kunci yang berbeda</p>
                 </td></tr>`;
                 document.getElementById('resultCount').textContent = '0 hasil';
@@ -210,12 +213,12 @@
                 tr.className = 'result-row cursor-pointer';
                 tr.onclick = () => openDetail(r.detail_url, r.nama);
                 tr.innerHTML = `
-                    <td class="px-5 py-3.5 text-xs text-gray-300 font-mono">${String(i + 1).padStart(2, '0')}</td>
+                    <td class="px-5 py-3.5 text-xs text-blue-300 font-mono">${String(i + 1).padStart(2, '0')}</td>
                     <td class="px-5 py-3.5 text-sm font-semibold text-gray-800">${esc(r.nama)}</td>
                     <td class="px-5 py-3.5 text-xs text-gray-400 font-mono tracking-wide">${esc(r.nik)}</td>
-                    <td class="px-5 py-3.5 text-xs text-gray-400">${esc(r.lokasi || '-')}</td>
+                    <td class="px-5 py-3.5 text-xs text-gray-500">${esc(r.lokasi || '-')}</td>
                     <td class="px-5 py-3.5 text-center">
-                        <button class="btn-main px-4 py-1.5 text-white text-[11px] rounded-lg font-semibold">Lihat</button>
+                        <button class="btn-main px-4 py-1.5 text-white text-[11px] rounded-lg font-bold shadow-sm">Lihat</button>
                     </td>`;
                 tbody.appendChild(tr);
             });
@@ -255,11 +258,11 @@
             let h = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">';
             items.forEach(f => {
                 if (p[f.k] !== undefined) {
-                    h += `<div class="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-100 shadow-sm">
-                        <div class="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
-                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${f.i}"/></svg>
+                    h += `<div class="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50/50 to-sky-50/30 border border-blue-100/50">
+                        <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center shrink-0 mt-0.5 shadow-sm border border-blue-100">
+                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${f.i}"/></svg>
                         </div>
-                        <div><p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">${f.l}</p>
+                        <div><p class="text-[10px] text-blue-400 font-semibold uppercase tracking-widest">${f.l}</p>
                         <p class="text-sm font-bold text-gray-800 mt-0.5">${esc(String(p[f.k]))}</p></div>
                     </div>`;
                 }
@@ -270,8 +273,8 @@
             const certs = data.sertifikat || [];
             if (certs.length === 0) {
                 document.getElementById('certData').innerHTML = `<div class="text-center py-10">
-                    <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                     </div>
                     <p class="text-gray-400 text-sm">Belum ada data sertifikat</p></div>`;
                 return;
@@ -281,11 +284,11 @@
             certs.forEach(c => {
                 const ok = c.status === 'Berlaku';
                 const sc = ok ? 'badge-berlaku' : 'badge-expired';
-                const bc = ok ? 'border-emerald-200/80' : 'border-red-200/80';
+                const bc = ok ? 'border-green-200' : 'border-red-200';
                 ch += `<div class="card-hover border ${bc} rounded-xl p-5 bg-white">
                     <div class="flex justify-between items-start mb-3">
                         <div>
-                            <span class="inline-block text-[10px] font-bold text-indigo-500 uppercase tracking-widest bg-indigo-50 px-2.5 py-0.5 rounded-md mb-2">${esc(c.tipe || '')}</span>
+                            <span class="inline-block text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2.5 py-0.5 rounded-md mb-2">${esc(c.tipe || '')}</span>
                             <h5 class="font-bold text-gray-800 text-sm">${esc(c.judul || '')}</h5>
                         </div>
                         <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${sc} shrink-0 ml-4">${esc(c.status || '-')}</span>
