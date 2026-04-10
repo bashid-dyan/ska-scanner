@@ -3,82 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKA Scanner - Verifikasi Sertifikat Konstruksi</title>
+    <title>Cek Sertifikat Keahlian - by Bashid Effendi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 50:'#f8fafc',100:'#f1f5f9',200:'#e2e8f0',300:'#cbd5e1',400:'#94a3b8',500:'#64748b',600:'#475569',700:'#334155',800:'#1e293b',900:'#0f172a',950:'#020617' },
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        .loader { border: 3px solid #e2e8f0; border-top: 3px solid #334155; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; display: inline-block; }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .loader { border: 3px solid #e0e7ff; border-top: 3px solid #4f46e5; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.35s ease-out; }
-        .hero-bg { background: #0f172a; }
-        .search-glow:focus { box-shadow: 0 0 0 3px rgba(100,116,139,0.15); }
+        .search-glow:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.12); border-color: #818cf8; }
         .card-hover { transition: all 0.2s ease; }
-        .card-hover:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
-        .badge-berlaku { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .card-hover:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+        .badge-berlaku { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
         .badge-expired { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
         .result-row { transition: background 0.15s ease; }
-        .result-row:hover { background: #f8fafc; }
-        .btn-dark { background: #1e293b; transition: all 0.2s ease; }
-        .btn-dark:hover { background: #334155; }
-        .btn-dark:disabled { opacity: 0.5; }
+        .result-row:hover { background: #f5f3ff; }
+        .btn-main { background: #4f46e5; transition: all 0.2s ease; }
+        .btn-main:hover { background: #4338ca; box-shadow: 0 2px 8px rgba(79,70,229,0.3); }
+        .btn-main:disabled { opacity: 0.5; }
+        .header-bg { background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 50%, #ede9fe 100%); }
     </style>
 </head>
-<body class="bg-stone-50 min-h-screen flex flex-col">
+<body class="bg-gray-50/50 min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="hero-bg text-white">
-        <div class="max-w-6xl mx-auto px-6 py-8">
-            <div class="flex items-center gap-3.5 mb-1.5">
-                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/10">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
+    <header class="header-bg border-b border-indigo-100/60">
+        <div class="max-w-6xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <!-- Logo BPK -->
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_BPK.svg/1200px-Emblem_of_BPK.svg.png"
+                         alt="Logo BPK" class="w-12 h-12 object-contain">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900 tracking-tight">Cek Sertifikat Keahlian</h1>
+                        <p class="text-indigo-500 text-xs font-medium">by Bashid Effendi</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight">SKA Scanner</h1>
-                    <p class="text-slate-400 text-xs">by Bashid Effendi</p>
+                <div class="hidden sm:block text-right">
+                    <p class="text-[11px] text-gray-400">Sumber data</p>
+                    <p class="text-xs text-gray-500 font-medium">LPJK Kementerian PUPR</p>
                 </div>
             </div>
-            <p class="text-slate-500 text-xs ml-[54px]">Verifikasi sertifikat keahlian konstruksi &middot; Data LPJK Kementerian PUPR</p>
         </div>
     </header>
 
     <main class="flex-1 max-w-6xl mx-auto px-6 py-8 w-full">
 
         <!-- Search -->
-        <div class="bg-white rounded-2xl shadow-sm border border-stone-200/80 p-7 mb-8 fade-in">
-            <p class="text-sm font-medium text-slate-700 mb-4">Cari berdasarkan nama atau NIK tenaga kerja konstruksi</p>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200/60 p-7 mb-8 fade-in">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-7 h-7 bg-indigo-50 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <p class="text-sm font-semibold text-gray-700">Pencarian Tenaga Kerja Konstruksi</p>
+            </div>
             <form id="searchForm" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-                <div class="flex items-center gap-4 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200">
+                <div class="flex items-center gap-4 bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-200">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="type" value="Nama" checked class="w-3.5 h-3.5 text-slate-700 focus:ring-slate-400">
-                        <span class="text-sm text-slate-600">Nama</span>
+                        <input type="radio" name="type" value="Nama" checked class="w-3.5 h-3.5 text-indigo-500 focus:ring-indigo-400">
+                        <span class="text-sm text-gray-600">Nama</span>
                     </label>
-                    <div class="w-px h-4 bg-stone-300"></div>
+                    <div class="w-px h-4 bg-gray-300"></div>
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="type" value="NIK" class="w-3.5 h-3.5 text-slate-700 focus:ring-slate-400">
-                        <span class="text-sm text-slate-600">NIK</span>
+                        <input type="radio" name="type" value="NIK" class="w-3.5 h-3.5 text-indigo-500 focus:ring-indigo-400">
+                        <span class="text-sm text-gray-600">NIK</span>
                     </label>
                 </div>
                 <input type="text" id="searchInput" name="q" placeholder="Ketik nama lengkap atau nomor NIK..."
-                    class="flex-1 px-4 py-2.5 border border-stone-200 rounded-xl focus:border-slate-400 outline-none text-sm search-glow transition">
-                <button type="submit" id="searchBtn" class="btn-dark px-7 py-2.5 text-white rounded-xl font-medium text-sm flex items-center gap-2 justify-center">
+                    class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl outline-none text-sm search-glow transition bg-white">
+                <button type="submit" id="searchBtn" class="btn-main px-7 py-2.5 text-white rounded-xl font-semibold text-sm flex items-center gap-2 justify-center">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Cari
+                    Cari Data
                 </button>
             </form>
         </div>
@@ -86,7 +83,7 @@
         <!-- Loading -->
         <div id="loading" class="hidden text-center py-16 fade-in">
             <div class="loader mx-auto mb-4"></div>
-            <p class="text-slate-500 text-sm" id="loadingMsg">Mencari data...</p>
+            <p class="text-gray-500 text-sm" id="loadingMsg">Mencari data...</p>
         </div>
 
         <!-- Error -->
@@ -99,25 +96,25 @@
 
         <!-- Detail -->
         <div id="detailSection" class="hidden mb-8 fade-in">
-            <div class="bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden">
-                <div class="hero-bg px-6 py-4 flex justify-between items-center">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4 flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                        <div class="w-9 h-9 bg-white/15 rounded-xl flex items-center justify-center backdrop-blur">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                         </div>
-                        <h3 id="detailTitle" class="text-sm font-semibold text-white">Detail Tenaga Kerja</h3>
+                        <h3 id="detailTitle" class="text-sm font-bold text-white">Detail Tenaga Kerja</h3>
                     </div>
-                    <button onclick="closeDetail()" class="text-slate-400 hover:text-white text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 border border-white/10">
+                    <button onclick="closeDetail()" class="text-white/70 hover:text-white text-xs bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                         Kembali
                     </button>
                 </div>
-                <div id="profileSection" class="p-6 border-b border-stone-100">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Informasi Profil</p>
+                <div id="profileSection" class="p-6 border-b border-gray-100 bg-gray-50/30">
+                    <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.15em] mb-4">Informasi Profil</p>
                     <div id="profileData"></div>
                 </div>
                 <div id="certSection" class="p-6">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Daftar Sertifikat</p>
+                    <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.15em] mb-4">Daftar Sertifikat</p>
                     <div id="certData"></div>
                 </div>
             </div>
@@ -125,23 +122,23 @@
 
         <!-- Results -->
         <div id="searchResults" class="hidden fade-in">
-            <div class="bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden">
-                <div class="px-6 py-4 border-b border-stone-100 flex justify-between items-center">
-                    <p class="text-sm font-semibold text-slate-700">Hasil Pencarian</p>
-                    <span id="resultCount" class="text-xs text-slate-400 bg-stone-100 px-3 py-1 rounded-full"></span>
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <p class="text-sm font-bold text-gray-700">Hasil Pencarian</p>
+                    <span id="resultCount" class="text-xs text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full font-semibold"></span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
-                            <tr class="border-b border-stone-100">
-                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left w-12">No</th>
-                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left">Nama</th>
-                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left">NIK</th>
-                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left">Lokasi</th>
-                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-center w-24"></th>
+                            <tr class="border-b border-gray-100 bg-gray-50/50">
+                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left w-12">No</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left">Nama</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left">NIK</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-left">Lokasi</th>
+                                <th class="px-5 py-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center w-24"></th>
                             </tr>
                         </thead>
-                        <tbody id="resultsBody" class="divide-y divide-stone-100"></tbody>
+                        <tbody id="resultsBody" class="divide-y divide-gray-50"></tbody>
                     </table>
                 </div>
             </div>
@@ -150,21 +147,20 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-stone-200 mt-auto">
-        <div class="max-w-6xl mx-auto px-6 py-6">
+    <footer class="border-t border-gray-200/60 mt-auto bg-white">
+        <div class="max-w-6xl mx-auto px-6 py-5">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center">
-                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_BPK.svg/1200px-Emblem_of_BPK.svg.png"
+                         alt="Logo BPK" class="w-7 h-7 object-contain opacity-60">
                     <div>
-                        <p class="text-xs font-semibold text-slate-700">SKA Scanner</p>
-                        <p class="text-[10px] text-slate-400">by Bashid Effendi</p>
+                        <p class="text-xs font-bold text-gray-600">Cek Sertifikat Keahlian</p>
+                        <p class="text-[10px] text-gray-400">by Bashid Effendi</p>
                     </div>
                 </div>
                 <div class="text-center sm:text-right">
-                    <p class="text-[11px] text-slate-400">Data bersumber dari <a href="https://lpjk.pu.go.id" target="_blank" class="text-slate-500 hover:text-slate-700 underline underline-offset-2 transition">LPJK Kementerian PUPR</a></p>
-                    <p class="text-[10px] text-slate-300 mt-0.5">Hanya untuk keperluan verifikasi. Data ditampilkan apa adanya.</p>
+                    <p class="text-[11px] text-gray-400">Data bersumber dari <a href="https://lpjk.pu.go.id" target="_blank" class="text-indigo-500 hover:text-indigo-600 font-medium transition">LPJK Kementerian PUPR</a></p>
+                    <p class="text-[10px] text-gray-300 mt-0.5">Hanya untuk keperluan verifikasi. Data ditampilkan apa adanya.</p>
                 </div>
             </div>
         </div>
@@ -200,11 +196,11 @@
 
             if (!data.results || data.results.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-14 text-center">
-                    <div class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg class="w-5 h-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <p class="text-slate-500 text-sm font-medium">Data tidak ditemukan</p>
-                    <p class="text-slate-400 text-xs mt-1">Coba kata kunci yang berbeda</p>
+                    <p class="text-gray-500 text-sm font-medium">Data tidak ditemukan</p>
+                    <p class="text-gray-400 text-xs mt-1">Coba kata kunci yang berbeda</p>
                 </td></tr>`;
                 document.getElementById('resultCount').textContent = '0 hasil';
                 showResults(); return;
@@ -215,12 +211,12 @@
                 tr.className = 'result-row cursor-pointer';
                 tr.onclick = () => openDetail(r.detail_url, r.nama);
                 tr.innerHTML = `
-                    <td class="px-5 py-3.5 text-xs text-slate-300 font-mono">${String(i + 1).padStart(2, '0')}</td>
-                    <td class="px-5 py-3.5 text-sm font-medium text-slate-800">${esc(r.nama)}</td>
-                    <td class="px-5 py-3.5 text-xs text-slate-400 font-mono tracking-wide">${esc(r.nik)}</td>
-                    <td class="px-5 py-3.5 text-xs text-slate-400">${esc(r.lokasi || '-')}</td>
+                    <td class="px-5 py-3.5 text-xs text-gray-300 font-mono">${String(i + 1).padStart(2, '0')}</td>
+                    <td class="px-5 py-3.5 text-sm font-semibold text-gray-800">${esc(r.nama)}</td>
+                    <td class="px-5 py-3.5 text-xs text-gray-400 font-mono tracking-wide">${esc(r.nik)}</td>
+                    <td class="px-5 py-3.5 text-xs text-gray-400">${esc(r.lokasi || '-')}</td>
                     <td class="px-5 py-3.5 text-center">
-                        <button class="btn-dark px-4 py-1.5 text-white text-[11px] rounded-lg font-medium">Lihat</button>
+                        <button class="btn-main px-4 py-1.5 text-white text-[11px] rounded-lg font-semibold">Lihat</button>
                     </td>`;
                 tbody.appendChild(tr);
             });
@@ -260,12 +256,12 @@
             let h = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">';
             items.forEach(f => {
                 if (p[f.k] !== undefined) {
-                    h += `<div class="flex items-start gap-3 p-3.5 rounded-xl bg-stone-50 border border-stone-100">
-                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shrink-0 border border-stone-200 mt-0.5">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${f.i}"/></svg>
+                    h += `<div class="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-100 shadow-sm">
+                        <div class="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${f.i}"/></svg>
                         </div>
-                        <div><p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">${f.l}</p>
-                        <p class="text-sm font-semibold text-slate-800 mt-0.5">${esc(String(p[f.k]))}</p></div>
+                        <div><p class="text-[10px] text-gray-400 font-semibold uppercase tracking-widest">${f.l}</p>
+                        <p class="text-sm font-bold text-gray-800 mt-0.5">${esc(String(p[f.k]))}</p></div>
                     </div>`;
                 }
             });
@@ -275,10 +271,10 @@
             const certs = data.sertifikat || [];
             if (certs.length === 0) {
                 document.getElementById('certData').innerHTML = `<div class="text-center py-10">
-                    <div class="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
                     </div>
-                    <p class="text-slate-400 text-sm">Belum ada data sertifikat</p></div>`;
+                    <p class="text-gray-400 text-sm">Belum ada data sertifikat</p></div>`;
                 return;
             }
 
@@ -286,18 +282,18 @@
             certs.forEach(c => {
                 const ok = c.status === 'Berlaku';
                 const sc = ok ? 'badge-berlaku' : 'badge-expired';
-                const bc = ok ? 'border-emerald-100' : 'border-red-100';
-                ch += `<div class="card-hover border ${bc} rounded-xl p-5">
+                const bc = ok ? 'border-emerald-200/80' : 'border-red-200/80';
+                ch += `<div class="card-hover border ${bc} rounded-xl p-5 bg-white">
                     <div class="flex justify-between items-start mb-3">
                         <div>
-                            <span class="inline-block text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-stone-100 px-2 py-0.5 rounded mb-2">${esc(c.tipe || '')}</span>
-                            <h5 class="font-semibold text-slate-800 text-sm">${esc(c.judul || '')}</h5>
+                            <span class="inline-block text-[10px] font-bold text-indigo-500 uppercase tracking-widest bg-indigo-50 px-2.5 py-0.5 rounded-md mb-2">${esc(c.tipe || '')}</span>
+                            <h5 class="font-bold text-gray-800 text-sm">${esc(c.judul || '')}</h5>
                         </div>
-                        <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold ${sc} shrink-0 ml-4">${esc(c.status || '-')}</span>
+                        <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${sc} shrink-0 ml-4">${esc(c.status || '-')}</span>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[13px] pt-3 border-t border-stone-100">`;
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[13px] pt-3 border-t border-gray-100">`;
                 [['jenjang','Jenjang'],['penerbit','Penerbit'],['asosiasi','Asosiasi'],['registrasi','Registrasi'],['berlaku_hingga','Berlaku Hingga'],['sub_bidang','Sub Bidang'],['klasifikasi','Klasifikasi'],['kualifikasi','Kualifikasi'],['nomor_registrasi','No. Registrasi'],['masa_berlaku','Masa Berlaku']].forEach(([k,l]) => {
-                    if (c[k]) ch += `<div><span class="text-slate-400">${l}:</span> <span class="text-slate-700 font-medium">${esc(c[k])}</span></div>`;
+                    if (c[k]) ch += `<div><span class="text-gray-400">${l}:</span> <span class="text-gray-700 font-medium">${esc(c[k])}</span></div>`;
                 });
                 ch += '</div></div>';
             });
