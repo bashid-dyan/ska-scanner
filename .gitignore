@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+cache/
+debug/
+chrome-profile/
+.env
+*.egg-info/

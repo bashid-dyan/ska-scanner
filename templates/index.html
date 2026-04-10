@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKA Scanner - Verifikasi Sertifikat Konstruksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50:'#f8fafc',100:'#f1f5f9',200:'#e2e8f0',300:'#cbd5e1',400:'#94a3b8',500:'#64748b',600:'#475569',700:'#334155',800:'#1e293b',900:'#0f172a',950:'#020617' },
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .loader { border: 3px solid #e2e8f0; border-top: 3px solid #334155; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.35s ease-out; }
+        .hero-bg { background: #0f172a; }
+        .search-glow:focus { box-shadow: 0 0 0 3px rgba(100,116,139,0.15); }
+        .card-hover { transition: all 0.2s ease; }
+        .card-hover:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+        .badge-berlaku { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-expired { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .result-row { transition: background 0.15s ease; }
+        .result-row:hover { background: #f8fafc; }
+        .btn-dark { background: #1e293b; transition: all 0.2s ease; }
+        .btn-dark:hover { background: #334155; }
+        .btn-dark:disabled { opacity: 0.5; }
+    </style>
+</head>
+<body class="bg-stone-50 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="hero-bg text-white">
+        <div class="max-w-6xl mx-auto px-6 py-8">
+            <div class="flex items-center gap-3.5 mb-1.5">
+                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/10">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">SKA Scanner</h1>
+                    <p class="text-slate-400 text-xs">by Bashid Effendi</p>
+                </div>
+            </div>
+            <p class="text-slate-500 text-xs ml-[54px]">Verifikasi sertifikat keahlian konstruksi &middot; Data LPJK Kementerian PUPR</p>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl mx-auto px-6 py-8 w-full">
+
+        <!-- Search -->
+        <div class="bg-white rounded-2xl shadow-sm border border-stone-200/80 p-7 mb-8 fade-in">
+            <p class="text-sm font-medium text-slate-700 mb-4">Cari berdasarkan nama atau NIK tenaga kerja konstruksi</p>
+            <form id="searchForm" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                <div class="flex items-center gap-4 bg-stone-50 px-4 py-2.5 rounded-xl border border-stone-200">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="type" value="Nama" checked class="w-3.5 h-3.5 text-slate-700 focus:ring-slate-400">
+                        <span class="text-sm text-slate-600">Nama</span>
+                    </label>
+                    <div class="w-px h-4 bg-stone-300"></div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="type" value="NIK" class="w-3.5 h-3.5 text-slate-700 focus:ring-slate-400">
+                        <span class="text-sm text-slate-600">NIK</span>
+                    </label>
+                </div>
+                <input type="text" id="searchInput" name="q" placeholder="Ketik nama lengkap atau nomor NIK..."
+                    class="flex-1 px-4 py-2.5 border border-stone-200 rounded-xl focus:border-slate-400 outline-none text-sm search-glow transition">
+                <button type="submit" id="searchBtn" class="btn-dark px-7 py-2.5 text-white rounded-xl font-medium text-sm flex items-center gap-2 justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Cari
+                </button>
+            </form>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="hidden text-center py-16 fade-in">
+            <div class="loader mx-auto mb-4"></div>
+            <p class="text-slate-500 text-sm" id="loadingMsg">Mencari data...</p>
+        </div>
+
+        <!-- Error -->
+        <div id="error" class="hidden bg-red-50 border border-red-100 rounded-xl p-4 mb-6">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <p class="text-red-600 text-sm" id="errorMsg"></p>
+            </div>
+        </div>
+
+        <!-- Detail -->
+        <div id="detailSection" class="hidden mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden">
+                <div class="hero-bg px-6 py-4 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                        </div>
+                        <h3 id="detailTitle" class="text-sm font-semibold text-white">Detail Tenaga Kerja</h3>
+                    </div>
+                    <button onclick="closeDetail()" class="text-slate-400 hover:text-white text-xs bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 border border-white/10">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        Kembali
+                    </button>
+                </div>
+                <div id="profileSection" class="p-6 border-b border-stone-100">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Informasi Profil</p>
+                    <div id="profileData"></div>
+                </div>
+                <div id="certSection" class="p-6">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Daftar Sertifikat</p>
+                    <div id="certData"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="searchResults" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden">
+                <div class="px-6 py-4 border-b border-stone-100 flex justify-between items-center">
+                    <p class="text-sm font-semibold text-slate-700">Hasil Pencarian</p>
+                    <span id="resultCount" class="text-xs text-slate-400 bg-stone-100 px-3 py-1 rounded-full"></span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-stone-100">
+                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left w-12">No</th>
+                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left">Nama</th>
+                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left">NIK</th>
+                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-left">Lokasi</th>
+                                <th class="px-5 py-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest text-center w-24"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody" class="divide-y divide-stone-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-stone-200 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 py-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold text-slate-700">SKA Scanner</p>
+                        <p class="text-[10px] text-slate-400">by Bashid Effendi</p>
+                    </div>
+                </div>
+                <div class="text-center sm:text-right">
+                    <p class="text-[11px] text-slate-400">Data bersumber dari <a href="https://lpjk.pu.go.id" target="_blank" class="text-slate-500 hover:text-slate-700 underline underline-offset-2 transition">LPJK Kementerian PUPR</a></p>
+                    <p class="text-[10px] text-slate-300 mt-0.5">Hanya untuk keperluan verifikasi. Data ditampilkan apa adanya.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const q = document.getElementById('searchInput').value.trim();
+            const type = document.querySelector('input[name="type"]:checked').value;
+            if (!q) return;
+
+            showLoading('Mencari data...');
+            hideError(); hideResults(); closeDetail();
+            document.getElementById('searchBtn').disabled = true;
+
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${type}`);
+                const data = await res.json();
+                if (data.error) { showError(data.error); return; }
+                renderResults(data);
+            } catch (err) {
+                showError('Terjadi kesalahan. Silakan coba lagi.');
+            } finally {
+                hideLoading();
+                document.getElementById('searchBtn').disabled = false;
+            }
+        });
+
+        function renderResults(data) {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+
+            if (!data.results || data.results.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-14 text-center">
+                    <div class="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-5 h-5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <p class="text-slate-500 text-sm font-medium">Data tidak ditemukan</p>
+                    <p class="text-slate-400 text-xs mt-1">Coba kata kunci yang berbeda</p>
+                </td></tr>`;
+                document.getElementById('resultCount').textContent = '0 hasil';
+                showResults(); return;
+            }
+
+            data.results.forEach((r, i) => {
+                const tr = document.createElement('tr');
+                tr.className = 'result-row cursor-pointer';
+                tr.onclick = () => openDetail(r.detail_url, r.nama);
+                tr.innerHTML = `
+                    <td class="px-5 py-3.5 text-xs text-slate-300 font-mono">${String(i + 1).padStart(2, '0')}</td>
+                    <td class="px-5 py-3.5 text-sm font-medium text-slate-800">${esc(r.nama)}</td>
+                    <td class="px-5 py-3.5 text-xs text-slate-400 font-mono tracking-wide">${esc(r.nik)}</td>
+                    <td class="px-5 py-3.5 text-xs text-slate-400">${esc(r.lokasi || '-')}</td>
+                    <td class="px-5 py-3.5 text-center">
+                        <button class="btn-dark px-4 py-1.5 text-white text-[11px] rounded-lg font-medium">Lihat</button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+
+            const c = data.from_cache ? ' &middot; cache' : '';
+            document.getElementById('resultCount').innerHTML = `${data.results.length} / ${data.total} data${c}`;
+            showResults();
+        }
+
+        async function openDetail(detailUrl, nama) {
+            document.getElementById('detailTitle').textContent = nama || 'Detail';
+            document.getElementById('profileData').innerHTML = '<div class="flex justify-center py-8"><div class="loader"></div></div>';
+            document.getElementById('certData').innerHTML = '';
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('detailSection').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            try {
+                const res = await fetch(`/api/detail?path=${encodeURIComponent(detailUrl)}`);
+                const data = await res.json();
+                if (data.error) { document.getElementById('profileData').innerHTML = `<p class="text-red-500 text-sm">${esc(data.error)}</p>`; return; }
+                renderDetail(data);
+            } catch (err) {
+                document.getElementById('profileData').innerHTML = '<p class="text-red-500 text-sm">Gagal memuat data.</p>';
+            }
+        }
+
+        function renderDetail(data) {
+            const p = data.profil || {};
+            const items = [
+                { k:'nama', l:'Nama Lengkap', i:'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z' },
+                { k:'nik', l:'NIK', i:'M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z' },
+                { k:'pendidikan', l:'Pendidikan', i:'M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5' },
+                { k:'total_sertifikat', l:'Total Sertifikat', i:'M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z' }
+            ];
+
+            let h = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">';
+            items.forEach(f => {
+                if (p[f.k] !== undefined) {
+                    h += `<div class="flex items-start gap-3 p-3.5 rounded-xl bg-stone-50 border border-stone-100">
+                        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shrink-0 border border-stone-200 mt-0.5">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${f.i}"/></svg>
+                        </div>
+                        <div><p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">${f.l}</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">${esc(String(p[f.k]))}</p></div>
+                    </div>`;
+                }
+            });
+            h += '</div>';
+            document.getElementById('profileData').innerHTML = h;
+
+            const certs = data.sertifikat || [];
+            if (certs.length === 0) {
+                document.getElementById('certData').innerHTML = `<div class="text-center py-10">
+                    <div class="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                    </div>
+                    <p class="text-slate-400 text-sm">Belum ada data sertifikat</p></div>`;
+                return;
+            }
+
+            let ch = '<div class="space-y-3">';
+            certs.forEach(c => {
+                const ok = c.status === 'Berlaku';
+                const sc = ok ? 'badge-berlaku' : 'badge-expired';
+                const bc = ok ? 'border-emerald-100' : 'border-red-100';
+                ch += `<div class="card-hover border ${bc} rounded-xl p-5">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="inline-block text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-stone-100 px-2 py-0.5 rounded mb-2">${esc(c.tipe || '')}</span>
+                            <h5 class="font-semibold text-slate-800 text-sm">${esc(c.judul || '')}</h5>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold ${sc} shrink-0 ml-4">${esc(c.status || '-')}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[13px] pt-3 border-t border-stone-100">`;
+                [['jenjang','Jenjang'],['penerbit','Penerbit'],['asosiasi','Asosiasi'],['registrasi','Registrasi'],['berlaku_hingga','Berlaku Hingga'],['sub_bidang','Sub Bidang'],['klasifikasi','Klasifikasi'],['kualifikasi','Kualifikasi'],['nomor_registrasi','No. Registrasi'],['masa_berlaku','Masa Berlaku']].forEach(([k,l]) => {
+                    if (c[k]) ch += `<div><span class="text-slate-400">${l}:</span> <span class="text-slate-700 font-medium">${esc(c[k])}</span></div>`;
+                });
+                ch += '</div></div>';
+            });
+            ch += '</div>';
+            document.getElementById('certData').innerHTML = ch;
+        }
+
+        function closeDetail() {
+            document.getElementById('detailSection').classList.add('hidden');
+            document.getElementById('searchResults').classList.remove('hidden');
+        }
+
+        function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        function showLoading(m) { document.getElementById('loadingMsg').textContent=m; document.getElementById('loading').classList.remove('hidden'); }
+        function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
+        function showError(m) { document.getElementById('error').classList.remove('hidden'); document.getElementById('errorMsg').textContent=m; }
+        function hideError() { document.getElementById('error').classList.add('hidden'); }
+        function showResults() { document.getElementById('searchResults').classList.remove('hidden'); }
+        function hideResults() { document.getElementById('searchResults').classList.add('hidden'); }
+    </script>
+</body>
+</html>
