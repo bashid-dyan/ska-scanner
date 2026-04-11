@@ -5,316 +5,465 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cek Sertifikat Keahlian - by Bashid Effendi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { colors: {
+            primary: {50:'#f0f4ff',100:'#dbe4ff',200:'#bac8ff',400:'#748ffc',500:'#5c7cfa',600:'#4c6ef5',700:'#4263eb'},
+            mint: {50:'#e6fcf5',100:'#c3fae8',500:'#20c997',600:'#12b886'},
+            coral: {50:'#fff5f5',100:'#ffe3e3',500:'#ff6b6b'},
+            grape: {50:'#f8f0fc',100:'#f3d9fa',500:'#cc5de8',600:'#be4bdb'},
+            amber: {50:'#fff9db',100:'#fff3bf',500:'#fcc419',600:'#fab005'},
+        }}}}
+    </script>
     <style>
-        * { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .loader { border: 3px solid #dbeafe; border-top: 3px solid #2563eb; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.7s linear infinite; display: inline-block; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.35s ease-out; }
-        .search-glow:focus { box-shadow: 0 0 0 3px rgba(59,130,246,0.15); border-color: #60a5fa; }
-        .card-hover { transition: all 0.2s ease; }
-        .card-hover:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-        .badge-berlaku { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-        .badge-expired { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
-        .result-row { transition: background 0.15s ease; }
-        .result-row:hover { background: #eff6ff; }
-        .btn-main { background: linear-gradient(135deg, #2563eb, #3b82f6); transition: all 0.2s ease; }
-        .btn-main:hover { background: linear-gradient(135deg, #1d4ed8, #2563eb); box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
-        .btn-main:disabled { opacity: 0.5; }
-        .header-bg { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 40%, #bfdbfe 100%); }
+        body{font-family:'Plus Jakarta Sans',sans-serif}
+        .gradient-text{background:linear-gradient(135deg,#4c6ef5,#be4bdb);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .hero-bg{background:radial-gradient(ellipse at 20% 50%,rgba(76,110,245,.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(190,75,219,.06) 0%,transparent 50%),linear-gradient(180deg,#f8f9ff,#fff)}
+        .card{background:#fff;border-radius:1rem;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #f1f3f5}
+        .tab-btn{padding:.5rem 1rem;font-size:.875rem;font-weight:600;border-radius:.75rem;transition:all .2s}
+        .tab-btn.active{background:linear-gradient(135deg,#4c6ef5,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(76,110,245,.3)}
+        .tab-btn:not(.active){background:#f1f3f5;color:#868e96}
+        .tab-btn:not(.active):hover{background:#e9ecef}
+        .badge-berlaku{background:#e6fcf5;color:#0ca678;font-weight:700}
+        .badge-expired{background:#ffe3e3;color:#e03131;font-weight:700}
+        .result-row:hover{background:#f0f4ff}
+        .fade-in{animation:fadeIn .3s ease-out}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        #logContainer{max-height:280px;overflow-y:auto}
+        #logContainer::-webkit-scrollbar{width:5px}
+        #logContainer::-webkit-scrollbar-thumb{background:#bac8ff;border-radius:3px}
+        .filter-btn{font-size:.7rem;padding:2px 10px;border-radius:9999px;font-weight:600;cursor:pointer;transition:all .15s}
+        .filter-btn.active{box-shadow:0 0 0 2px #4c6ef5}
     </style>
 </head>
-<body class="bg-blue-50/30 min-h-screen flex flex-col">
-
-    <!-- Header -->
-    <header class="header-bg border-b border-blue-200/50">
-        <div class="max-w-6xl mx-auto px-6 py-5">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-5">
-                    <img src="/static/logo-bpk.svg"
-                         alt="Logo BPK" class="w-16 h-16 object-contain drop-shadow-sm">
-                    <div>
-                        <h1 class="text-2xl font-extrabold text-blue-900 tracking-tight leading-tight">Cek Sertifikat Keahlian</h1>
-                        <p class="text-blue-500 text-sm font-semibold mt-0.5">by Bashid Effendi</p>
-                    </div>
-                </div>
-                <div class="hidden sm:flex items-center gap-2 bg-white/60 backdrop-blur px-4 py-2 rounded-xl border border-blue-100">
-                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                    <div>
-                        <p class="text-[10px] text-blue-400 font-medium">Sumber data</p>
-                        <p class="text-xs text-blue-700 font-semibold">LPJK Kementerian PUPR</p>
-                    </div>
+<body class="min-h-screen hero-bg">
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="/static/logo-bpk.png" alt="BPK" class="w-10 h-10 object-contain" onerror="this.src='/static/logo-bpk.svg'">
+                <div>
+                    <h1 class="text-lg font-bold gradient-text">Cek Sertifikat Keahlian</h1>
+                    <p class="text-xs text-gray-400">by Bashid Effendi &mdash; Data LPJK Kementerian PUPR</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-6xl mx-auto px-6 py-8 w-full">
-
-        <!-- Search -->
-        <div class="bg-white rounded-2xl shadow-md border border-blue-100/50 p-7 mb-8 fade-in">
-            <div class="flex items-center gap-2.5 mb-4">
-                <div class="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <svg class="w-4.5 h-4.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </div>
-                <p class="text-sm font-bold text-gray-800">Pencarian Tenaga Kerja Konstruksi</p>
-            </div>
-            <form id="searchForm" class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-                <div class="flex items-center gap-4 bg-blue-50/50 px-4 py-2.5 rounded-xl border border-blue-100">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="type" value="Nama" checked class="w-3.5 h-3.5 text-blue-600 focus:ring-blue-400">
-                        <span class="text-sm font-medium text-gray-600">Nama</span>
-                    </label>
-                    <div class="w-px h-4 bg-blue-200"></div>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="type" value="NIK" class="w-3.5 h-3.5 text-blue-600 focus:ring-blue-400">
-                        <span class="text-sm font-medium text-gray-600">NIK</span>
-                    </label>
-                </div>
-                <input type="text" id="searchInput" name="q" placeholder="Ketik nama lengkap atau nomor NIK..."
-                    class="flex-1 px-4 py-2.5 border border-blue-200/60 rounded-xl outline-none text-sm search-glow transition bg-white">
-                <button type="submit" id="searchBtn" class="btn-main px-7 py-2.5 text-white rounded-xl font-bold text-sm flex items-center gap-2 justify-center shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    Cari Data
-                </button>
-            </form>
+    <main class="max-w-4xl mx-auto px-4 py-6 space-y-5">
+        <!-- Tabs -->
+        <div class="flex gap-2 flex-wrap">
+            <button class="tab-btn active" onclick="switchTab('tk')">Tenaga Kerja</button>
+            <button class="tab-btn" onclick="switchTab('bu')">Badan Usaha</button>
+            <button class="tab-btn" onclick="switchTab('bulk')">Bulk Check</button>
         </div>
 
-        <!-- Loading -->
-        <div id="loading" class="hidden text-center py-16 fade-in">
-            <div class="loader mx-auto mb-4"></div>
-            <p class="text-blue-500 text-sm font-medium" id="loadingMsg">Mencari data...</p>
-        </div>
-
-        <!-- Error -->
-        <div id="error" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-            <div class="flex items-center gap-2.5">
-                <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <p class="text-red-600 text-sm font-medium" id="errorMsg"></p>
-            </div>
-        </div>
-
-        <!-- Detail -->
-        <div id="detailSection" class="hidden mb-8 fade-in">
-            <div class="bg-white rounded-2xl shadow-md border border-blue-100/50 overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 px-6 py-4 flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-                        </div>
-                        <h3 id="detailTitle" class="text-sm font-bold text-white">Detail Tenaga Kerja</h3>
+        <!-- TAB: Tenaga Kerja -->
+        <section id="tab-tk" class="space-y-4">
+            <div class="card p-5">
+                <form id="searchFormTK" onsubmit="doSearch(event,'tk')">
+                    <div class="flex gap-3 mb-3">
+                        <label class="flex items-center gap-1.5 text-sm cursor-pointer"><input type="radio" name="typeTK" value="Nama" checked class="accent-primary-600"> Nama</label>
+                        <label class="flex items-center gap-1.5 text-sm cursor-pointer"><input type="radio" name="typeTK" value="NIK" class="accent-primary-600"> NIK</label>
                     </div>
-                    <button onclick="closeDetail()" class="text-white/80 hover:text-white text-xs bg-white/15 hover:bg-white/25 px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-medium">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                        Kembali
-                    </button>
+                    <div class="flex gap-2">
+                        <input type="text" id="qTK" placeholder="Ketik nama lengkap atau NIK..." class="flex-1 border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary-400 outline-none" required>
+                        <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all">Cari</button>
+                    </div>
+                </form>
+            </div>
+            <div id="resultsTK"></div>
+            <div id="detailTK" class="hidden"></div>
+        </section>
+
+        <!-- TAB: Badan Usaha -->
+        <section id="tab-bu" class="space-y-4 hidden">
+            <div class="card p-5">
+                <form id="searchFormBU" onsubmit="doSearch(event,'bu')">
+                    <div class="flex gap-3 mb-3">
+                        <label class="flex items-center gap-1.5 text-sm cursor-pointer"><input type="radio" name="typeBU" value="Nama" checked class="accent-grape-600"> Nama</label>
+                        <label class="flex items-center gap-1.5 text-sm cursor-pointer"><input type="radio" name="typeBU" value="NPWP" class="accent-grape-600"> NPWP</label>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="qBU" placeholder="Ketik nama badan usaha atau NPWP..." class="flex-1 border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-grape-400 outline-none" required>
+                        <button type="submit" class="bg-grape-600 hover:bg-grape-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all">Cari</button>
+                    </div>
+                </form>
+            </div>
+            <div id="resultsBU"></div>
+            <div id="detailBU" class="hidden"></div>
+        </section>
+
+        <!-- TAB: Bulk Check -->
+        <section id="tab-bulk" class="space-y-4 hidden">
+            <div class="card p-5">
+                <h3 class="font-bold text-gray-800 mb-3">Bulk Check Tenaga Kerja</h3>
+                <p class="text-sm text-gray-400 mb-4">Upload file Excel atau ketik daftar nama (satu per baris). Sistem akan cek semua secara otomatis dan hasilnya bisa didownload.</p>
+                <form id="bulkForm" onsubmit="doBulk(event)">
+                    <div class="mb-3">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Upload Excel (.xlsx) — kolom B = nama</label>
+                        <input type="file" id="bulkFile" accept=".xlsx" class="block w-full text-xs border-2 border-gray-200 rounded-xl p-2 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-50 file:text-primary-600 file:font-semibold file:text-xs">
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Atau ketik nama (satu per baris)</label>
+                        <textarea id="bulkNames" rows="4" placeholder="ATAN PRASEJO&#10;SITI NURHALIZA&#10;BUDI SANTOSO" class="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:border-primary-400 outline-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-xl text-sm transition-all">Mulai Bulk Check</button>
+                </form>
+            </div>
+            <div id="bulkProgress" class="hidden card p-5 fade-in">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-gray-800">Progress</h3>
+                    <span id="bulkStatus" class="text-xs font-semibold px-3 py-0.5 rounded-full bg-amber-100 text-amber-700">Memproses</span>
                 </div>
-                <div id="profileSection" class="p-6 border-b border-blue-50 bg-blue-50/20">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-[0.15em] mb-4">Informasi Profil</p>
-                    <div id="profileData"></div>
+                <div class="mb-3">
+                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                        <span id="bulkText">0 / 0</span>
+                        <span id="bulkPct" class="font-bold text-primary-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                        <div id="bulkBar" class="h-3 rounded-full bg-gradient-to-r from-primary-500 to-grape-500 transition-all duration-300" style="width:0%"></div>
+                    </div>
                 </div>
-                <div id="certSection" class="p-6">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-[0.15em] mb-4">Daftar Sertifikat</p>
-                    <div id="certData"></div>
+                <div id="logContainer" class="bg-gray-50 rounded-xl p-3 font-mono text-xs space-y-0.5 border border-gray-100"></div>
+                <div id="bulkDone" class="hidden mt-4 fade-in">
+                    <div id="bulkSummary" class="grid grid-cols-3 gap-3 mb-3"></div>
+                    <a id="bulkDownload" href="#" class="block w-full text-center bg-mint-500 hover:bg-mint-600 text-white font-bold py-3 rounded-xl text-sm transition-all">Download Hasil (.xlsx)</a>
                 </div>
             </div>
-        </div>
-
-        <!-- Results -->
-        <div id="searchResults" class="hidden fade-in">
-            <div class="bg-white rounded-2xl shadow-md border border-blue-100/50 overflow-hidden">
-                <div class="px-6 py-4 border-b border-blue-50 flex justify-between items-center bg-blue-50/30">
-                    <p class="text-sm font-bold text-gray-800">Hasil Pencarian</p>
-                    <span id="resultCount" class="text-xs text-blue-700 bg-blue-100 px-3 py-1 rounded-full font-bold"></span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-blue-50 bg-blue-50/20">
-                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left w-12">No</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left">Nama</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left">NIK</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-left">Lokasi</th>
-                                <th class="px-5 py-3 text-[10px] font-bold text-blue-400 uppercase tracking-widest text-center w-24"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultsBody" class="divide-y divide-blue-50/50"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-blue-100 mt-auto bg-white/80">
-        <div class="max-w-6xl mx-auto px-6 py-5">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div class="flex items-center gap-3">
-                    <img src="/static/logo-bpk.svg"
-                         alt="Logo BPK" class="w-9 h-9 object-contain opacity-40">
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">Cek Sertifikat Keahlian</p>
-                        <p class="text-[10px] text-gray-400">by Bashid Effendi</p>
-                    </div>
-                </div>
-                <div class="text-center sm:text-right">
-                    <p class="text-[11px] text-gray-400">Data bersumber dari <a href="https://lpjk.pu.go.id" target="_blank" class="text-blue-500 hover:text-blue-600 font-semibold transition">LPJK Kementerian PUPR</a></p>
-                    <p class="text-[10px] text-gray-300 mt-0.5">Hanya untuk keperluan verifikasi. Data ditampilkan apa adanya.</p>
-                </div>
-            </div>
-        </div>
+    <footer class="text-center py-6">
+        <p class="text-sm font-semibold text-gray-400">Cek Sertifikat Keahlian <span class="gradient-text">by Bashid Effendi</span></p>
+        <p class="text-xs text-gray-300">Data dari <a href="https://lpjk.pu.go.id" target="_blank" class="underline">LPJK Kementerian PUPR</a></p>
     </footer>
 
-    <script>
-        document.getElementById('searchForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const q = document.getElementById('searchInput').value.trim();
-            const type = document.querySelector('input[name="type"]:checked').value;
-            if (!q) return;
+<script>
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+let currentTab = 'tk';
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', ['tk','bu','bulk'][i] === tab);
+    });
+}
 
-            showLoading('Mencari data...');
-            hideError(); hideResults(); closeDetail();
-            document.getElementById('searchBtn').disabled = true;
+// ============================================================
+// SEARCH (Tenaga Kerja & Badan Usaha)
+// ============================================================
+let lastSearchData = {tk: null, bu: null};
+let lastDetailData = {tk: null, bu: null};
 
-            try {
-                const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${type}`);
-                const data = await res.json();
-                if (data.error) { showError(data.error); return; }
-                renderResults(data);
-            } catch (err) {
-                showError('Terjadi kesalahan. Silakan coba lagi.');
-            } finally {
-                hideLoading();
-                document.getElementById('searchBtn').disabled = false;
-            }
+async function doSearch(e, mode) {
+    e.preventDefault();
+    const q = document.getElementById(mode === 'tk' ? 'qTK' : 'qBU').value.trim();
+    const type = document.querySelector(`input[name="type${mode.toUpperCase()}"]:checked`).value;
+    const resultsEl = document.getElementById('results' + mode.toUpperCase());
+    const detailEl = document.getElementById('detail' + mode.toUpperCase());
+
+    detailEl.classList.add('hidden');
+    resultsEl.innerHTML = '<div class="text-center py-8"><div class="inline-block w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div><p class="text-sm text-gray-400 mt-2">Mencari...</p></div>';
+
+    const endpoint = mode === 'tk' ? '/api/search' : '/api/search-bu';
+    try {
+        const resp = await fetch(`${endpoint}?q=${encodeURIComponent(q)}&type=${type}`);
+        const data = await resp.json();
+        if (data.error) { resultsEl.innerHTML = renderError(data.error); return; }
+        lastSearchData[mode] = data;
+        renderResults(data, mode);
+    } catch (err) {
+        resultsEl.innerHTML = renderError(err.message);
+    }
+}
+
+function renderResults(data, mode) {
+    const el = document.getElementById('results' + mode.toUpperCase());
+    const idField = mode === 'tk' ? 'nik' : 'npwp';
+    const idLabel = mode === 'tk' ? 'NIK' : 'NPWP';
+
+    if (!data.results || !data.results.length) {
+        el.innerHTML = '<div class="card p-6 text-center text-gray-400 text-sm">Tidak ada hasil ditemukan</div>';
+        return;
+    }
+
+    const cacheTag = data.from_cache ? '<span class="text-xs text-gray-300 ml-1">cache</span>' : '';
+    let html = `<div class="card fade-in">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+            <p class="text-sm text-gray-500">${data.total} hasil ${cacheTag}</p>
+            <button onclick="exportSearch('${mode}')" class="text-xs font-semibold text-primary-600 hover:text-primary-700 bg-primary-50 hover:bg-primary-100 px-3 py-1 rounded-lg transition-all">Export Excel</button>
+        </div>
+        <div class="overflow-x-auto"><table class="w-full text-sm">
+        <thead><tr class="bg-gray-50 text-gray-400 text-xs uppercase tracking-wider">
+            <th class="py-2.5 px-4 text-left w-10">No</th>
+            <th class="py-2.5 px-4 text-left">Nama</th>
+            <th class="py-2.5 px-4 text-left">${idLabel}</th>
+            <th class="py-2.5 px-4 text-left">Lokasi</th>
+            <th class="py-2.5 px-4 w-16"></th>
+        </tr></thead><tbody>`;
+
+    data.results.forEach((r, i) => {
+        html += `<tr class="result-row border-b border-gray-50 cursor-pointer" onclick="openDetail('${esc(r.detail_url)}','${esc(r.nama)}','${mode}')">
+            <td class="py-2.5 px-4 text-gray-400 font-mono text-xs">${String(i+1).padStart(2,'0')}</td>
+            <td class="py-2.5 px-4 font-semibold text-gray-800">${esc(r.nama)}</td>
+            <td class="py-2.5 px-4 text-gray-500 font-mono text-xs">${esc(r[idField] || '-')}</td>
+            <td class="py-2.5 px-4 text-gray-400 text-xs">${esc(r.lokasi || '-')}</td>
+            <td class="py-2.5 px-4"><span class="text-primary-600 text-xs font-semibold">Lihat</span></td>
+        </tr>`;
+    });
+    html += '</tbody></table></div></div>';
+    el.innerHTML = html;
+}
+
+async function openDetail(path, nama, mode) {
+    const resultsEl = document.getElementById('results' + mode.toUpperCase());
+    const detailEl = document.getElementById('detail' + mode.toUpperCase());
+
+    resultsEl.classList.add('hidden');
+    detailEl.classList.remove('hidden');
+    detailEl.innerHTML = '<div class="text-center py-8"><div class="inline-block w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div><p class="text-sm text-gray-400 mt-2">Memuat detail...</p></div>';
+    window.scrollTo({top: 0, behavior: 'smooth'});
+
+    const endpoint = mode === 'tk' ? '/api/detail' : '/api/detail-bu';
+    try {
+        const resp = await fetch(`${endpoint}?path=${encodeURIComponent(path)}`);
+        const data = await resp.json();
+        if (data.error) { detailEl.innerHTML = renderError(data.error); return; }
+        lastDetailData[mode] = data;
+        renderDetail(data, mode);
+    } catch (err) {
+        detailEl.innerHTML = renderError(err.message);
+    }
+}
+
+function renderDetail(data, mode) {
+    const el = document.getElementById('detail' + mode.toUpperCase());
+    const p = data.profil || {};
+    const certs = mode === 'tk' ? (data.sertifikat || []) : (data.sbu || []);
+    const isTK = mode === 'tk';
+
+    // Profile section
+    let html = `<div class="card fade-in">
+        <div class="bg-gradient-to-r from-primary-600 to-grape-500 px-5 py-4 rounded-t-2xl flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button onclick="closeDetail('${mode}')" class="text-white/70 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+                <h2 class="text-white font-bold text-lg">${esc(p.nama || 'Detail')}</h2>
+            </div>
+            <button onclick="exportDetail('${mode}')" class="text-xs font-semibold text-white/80 hover:text-white bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg transition-all">Export Excel</button>
+        </div>
+        <div class="p-5">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">`;
+
+    if (isTK) {
+        html += profileCard('Nama', p.nama, '#4c6ef5');
+        html += profileCard('NIK', p.nik, '#be4bdb');
+        html += profileCard('Pendidikan', p.pendidikan, '#20c997');
+        html += profileCard('Total Sertifikat', p.total_sertifikat, '#fab005');
+    } else {
+        html += profileCard('Nama', p.nama, '#4c6ef5');
+        html += profileCard('NPWP', p.npwp, '#be4bdb');
+        html += profileCard('NIB', p.nib, '#20c997');
+        html += profileCard('Total SBU', p.total_sbu, '#fab005');
+    }
+
+    html += `</div>`;
+
+    // Filter buttons
+    if (certs.length > 0) {
+        const types = [...new Set(certs.map(c => c.tipe || 'Lainnya'))];
+        html += `<div class="flex flex-wrap gap-2 mb-4">
+            <span class="filter-btn active bg-primary-100 text-primary-700" onclick="filterCerts(this,'all','${mode}')">Semua (${certs.length})</span>`;
+        types.forEach(t => {
+            const count = certs.filter(c => c.tipe === t).length;
+            html += `<span class="filter-btn bg-gray-100 text-gray-500" onclick="filterCerts(this,'${esc(t)}','${mode}')">${esc(t)} (${count})</span>`;
         });
+        const berlaku = certs.filter(c => c.status === 'Berlaku').length;
+        const expired = certs.filter(c => c.status !== 'Berlaku').length;
+        html += `<span class="filter-btn bg-mint-50 text-mint-600" onclick="filterCerts(this,'berlaku','${mode}')">Berlaku (${berlaku})</span>`;
+        html += `<span class="filter-btn bg-coral-50 text-coral-500" onclick="filterCerts(this,'expired','${mode}')">Expired (${expired})</span>`;
+        html += `</div>`;
+    }
 
-        function renderResults(data) {
-            const tbody = document.getElementById('resultsBody');
-            tbody.innerHTML = '';
-
-            if (!data.results || data.results.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-14 text-center">
-                    <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg class="w-5 h-5 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    // Certificates / SBU
+    html += `<div id="certList${mode.toUpperCase()}" class="space-y-3">`;
+    if (!certs.length) {
+        html += '<p class="text-center text-gray-400 text-sm py-4">Belum ada data sertifikat</p>';
+    } else {
+        certs.forEach((c, i) => {
+            const statusClass = c.status === 'Berlaku' ? 'badge-berlaku' : 'badge-expired';
+            html += `<div class="cert-card border border-gray-100 rounded-xl p-4 hover:shadow-sm transition-all" data-tipe="${esc(c.tipe||'')}" data-status="${c.status === 'Berlaku' ? 'berlaku' : 'expired'}">
+                <div class="flex items-start justify-between mb-2">
+                    <div>
+                        <span class="text-xs font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded">${esc(c.tipe || 'N/A')}</span>
+                        <h4 class="font-bold text-gray-800 mt-1 text-sm">${esc(c.judul || '')}</h4>
                     </div>
-                    <p class="text-gray-600 text-sm font-semibold">Data tidak ditemukan</p>
-                    <p class="text-gray-400 text-xs mt-1">Coba kata kunci yang berbeda</p>
-                </td></tr>`;
-                document.getElementById('resultCount').textContent = '0 hasil';
-                showResults(); return;
-            }
+                    <span class="text-xs px-2.5 py-0.5 rounded-full ${statusClass}">${esc(c.status || '-')}</span>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">`;
 
-            data.results.forEach((r, i) => {
-                const tr = document.createElement('tr');
-                tr.className = 'result-row cursor-pointer';
-                tr.onclick = () => openDetail(r.detail_url, r.nama);
-                tr.innerHTML = `
-                    <td class="px-5 py-3.5 text-xs text-blue-300 font-mono">${String(i + 1).padStart(2, '0')}</td>
-                    <td class="px-5 py-3.5 text-sm font-semibold text-gray-800">${esc(r.nama)}</td>
-                    <td class="px-5 py-3.5 text-xs text-gray-400 font-mono tracking-wide">${esc(r.nik)}</td>
-                    <td class="px-5 py-3.5 text-xs text-gray-500">${esc(r.lokasi || '-')}</td>
-                    <td class="px-5 py-3.5 text-center">
-                        <button class="btn-main px-4 py-1.5 text-white text-[11px] rounded-lg font-bold shadow-sm">Lihat</button>
-                    </td>`;
-                tbody.appendChild(tr);
-            });
+            const fields = isTK
+                ? ['jenjang','penerbit','asosiasi','sub_bidang','klasifikasi','kualifikasi','berlaku_hingga','nomor_registrasi','masa_berlaku']
+                : ['klasifikasi','kualifikasi','sub_bidang','penerbit','asosiasi','berlaku_hingga','nomor_registrasi'];
 
-            const c = data.from_cache ? ' &middot; cache' : '';
-            document.getElementById('resultCount').innerHTML = `${data.results.length} / ${data.total} data${c}`;
-            showResults();
-        }
-
-        async function openDetail(detailUrl, nama) {
-            document.getElementById('detailTitle').textContent = nama || 'Detail';
-            document.getElementById('profileData').innerHTML = '<div class="flex justify-center py-8"><div class="loader"></div></div>';
-            document.getElementById('certData').innerHTML = '';
-            document.getElementById('searchResults').classList.add('hidden');
-            document.getElementById('detailSection').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            try {
-                const res = await fetch(`/api/detail?path=${encodeURIComponent(detailUrl)}`);
-                const data = await res.json();
-                if (data.error) { document.getElementById('profileData').innerHTML = `<p class="text-red-500 text-sm">${esc(data.error)}</p>`; return; }
-                renderDetail(data);
-            } catch (err) {
-                document.getElementById('profileData').innerHTML = '<p class="text-red-500 text-sm">Gagal memuat data.</p>';
-            }
-        }
-
-        function renderDetail(data) {
-            const p = data.profil || {};
-            const items = [
-                { k:'nama', l:'Nama Lengkap', i:'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z' },
-                { k:'nik', l:'NIK', i:'M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z' },
-                { k:'pendidikan', l:'Pendidikan', i:'M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5' },
-                { k:'total_sertifikat', l:'Total Sertifikat', i:'M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z' }
-            ];
-
-            let h = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">';
-            items.forEach(f => {
-                if (p[f.k] !== undefined) {
-                    h += `<div class="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50/50 to-sky-50/30 border border-blue-100/50">
-                        <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center shrink-0 mt-0.5 shadow-sm border border-blue-100">
-                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${f.i}"/></svg>
-                        </div>
-                        <div><p class="text-[10px] text-blue-400 font-semibold uppercase tracking-widest">${f.l}</p>
-                        <p class="text-sm font-bold text-gray-800 mt-0.5">${esc(String(p[f.k]))}</p></div>
-                    </div>`;
+            fields.forEach(f => {
+                if (c[f]) {
+                    const label = f.replace(/_/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `<p class="text-gray-400"><span class="text-gray-600 font-medium">${label}:</span> ${esc(c[f])}</p>`;
                 }
             });
-            h += '</div>';
-            document.getElementById('profileData').innerHTML = h;
 
-            const certs = data.sertifikat || [];
-            if (certs.length === 0) {
-                document.getElementById('certData').innerHTML = `<div class="text-center py-10">
-                    <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <svg class="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                    </div>
-                    <p class="text-gray-400 text-sm">Belum ada data sertifikat</p></div>`;
-                return;
-            }
+            html += `</div></div>`;
+        });
+    }
+    html += `</div></div></div>`;
+    el.innerHTML = html;
+}
 
-            let ch = '<div class="space-y-3">';
-            certs.forEach(c => {
-                const ok = c.status === 'Berlaku';
-                const sc = ok ? 'badge-berlaku' : 'badge-expired';
-                const bc = ok ? 'border-green-200' : 'border-red-200';
-                ch += `<div class="card-hover border ${bc} rounded-xl p-5 bg-white">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <span class="inline-block text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2.5 py-0.5 rounded-md mb-2">${esc(c.tipe || '')}</span>
-                            <h5 class="font-bold text-gray-800 text-sm">${esc(c.judul || '')}</h5>
-                        </div>
-                        <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${sc} shrink-0 ml-4">${esc(c.status || '-')}</span>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[13px] pt-3 border-t border-gray-100">`;
-                [['jenjang','Jenjang'],['penerbit','Penerbit'],['asosiasi','Asosiasi'],['registrasi','Registrasi'],['berlaku_hingga','Berlaku Hingga'],['sub_bidang','Sub Bidang'],['klasifikasi','Klasifikasi'],['kualifikasi','Kualifikasi'],['nomor_registrasi','No. Registrasi'],['masa_berlaku','Masa Berlaku']].forEach(([k,l]) => {
-                    if (c[k]) ch += `<div><span class="text-gray-400">${l}:</span> <span class="text-gray-700 font-medium">${esc(c[k])}</span></div>`;
-                });
-                ch += '</div></div>';
+function profileCard(label, value, color) {
+    return `<div class="rounded-xl p-3" style="background:${color}10">
+        <p class="text-xs font-medium" style="color:${color}80">${label}</p>
+        <p class="font-bold text-sm text-gray-800 mt-0.5">${esc(value || '-')}</p>
+    </div>`;
+}
+
+function filterCerts(btn, filter, mode) {
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll(`#certList${mode.toUpperCase()} .cert-card`);
+    cards.forEach(card => {
+        if (filter === 'all') { card.style.display = ''; return; }
+        if (filter === 'berlaku') { card.style.display = card.dataset.status === 'berlaku' ? '' : 'none'; return; }
+        if (filter === 'expired') { card.style.display = card.dataset.status === 'expired' ? '' : 'none'; return; }
+        card.style.display = card.dataset.tipe === filter ? '' : 'none';
+    });
+}
+
+function closeDetail(mode) {
+    document.getElementById('detail' + mode.toUpperCase()).classList.add('hidden');
+    document.getElementById('results' + mode.toUpperCase()).classList.remove('hidden');
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+async function exportSearch(mode) {
+    const data = lastSearchData[mode];
+    if (!data) return;
+    const resp = await fetch('/api/export', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({type: 'search', results: data.results, filename: 'Hasil_Pencarian_' + (mode === 'tk' ? 'TK' : 'BU')})
+    });
+    const blob = await resp.blob();
+    downloadBlob(blob, 'Hasil_Pencarian.xlsx');
+}
+
+async function exportDetail(mode) {
+    const data = lastDetailData[mode];
+    if (!data) return;
+    const resp = await fetch('/api/export', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({type: 'detail', profil: data.profil, sertifikat: data.sertifikat || data.sbu || [], filename: 'Detail_Sertifikat'})
+    });
+    const blob = await resp.blob();
+    downloadBlob(blob, 'Detail_Sertifikat.xlsx');
+}
+
+function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// BULK CHECK
+// ============================================================
+async function doBulk(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById('bulkFile');
+    const namesInput = document.getElementById('bulkNames').value.trim();
+    const fd = new FormData();
+    fd.append('type', 'Nama');
+
+    if (fileInput.files.length) {
+        fd.append('file', fileInput.files[0]);
+    } else if (namesInput) {
+        fd.append('names', namesInput);
+    } else {
+        alert('Upload file Excel atau ketik daftar nama!');
+        return;
+    }
+
+    try {
+        const resp = await fetch('/api/bulk-upload', {method: 'POST', body: fd});
+        const data = await resp.json();
+        if (data.error) { alert(data.error); return; }
+        startBulkProgress(data.job_id);
+    } catch (err) {
+        alert('Gagal: ' + err.message);
+    }
+}
+
+function startBulkProgress(jobId) {
+    const progressEl = document.getElementById('bulkProgress');
+    const doneEl = document.getElementById('bulkDone');
+    const logEl = document.getElementById('logContainer');
+    progressEl.classList.remove('hidden');
+    doneEl.classList.add('hidden');
+    logEl.innerHTML = '';
+
+    const evtSource = new EventSource(`/api/bulk-progress/${jobId}`);
+    evtSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.error && !data.status) { evtSource.close(); return; }
+
+        if (data.total > 0) {
+            const pct = Math.round((data.current / data.total) * 100);
+            document.getElementById('bulkBar').style.width = pct + '%';
+            document.getElementById('bulkText').textContent = `${data.current} / ${data.total}`;
+            document.getElementById('bulkPct').textContent = pct + '%';
+        }
+
+        if (data.logs) {
+            data.logs.forEach(log => {
+                const color = log.status === 'Ditemukan' ? 'text-green-600' : 'text-red-400';
+                const p = document.createElement('p');
+                p.className = color;
+                p.textContent = `[${log.index}/${log.total}] ${log.nama} — ${log.status}`;
+                logEl.appendChild(p);
             });
-            ch += '</div>';
-            document.getElementById('certData').innerHTML = ch;
+            logEl.scrollTop = logEl.scrollHeight;
         }
 
-        function closeDetail() {
-            document.getElementById('detailSection').classList.add('hidden');
-            document.getElementById('searchResults').classList.remove('hidden');
+        if (data.status === 'done') {
+            evtSource.close();
+            document.getElementById('bulkStatus').textContent = 'Selesai';
+            document.getElementById('bulkStatus').className = 'text-xs font-semibold px-3 py-0.5 rounded-full bg-green-100 text-green-700';
+            const s = data.summary;
+            document.getElementById('bulkSummary').innerHTML = `
+                <div class="bg-gray-50 rounded-xl p-3 text-center"><p class="text-xl font-extrabold text-gray-700">${s.total}</p><p class="text-xs text-gray-400">Total</p></div>
+                <div class="bg-mint-50 rounded-xl p-3 text-center"><p class="text-xl font-extrabold text-green-600">${s.found}</p><p class="text-xs text-gray-400">Ditemukan</p></div>
+                <div class="bg-coral-50 rounded-xl p-3 text-center"><p class="text-xl font-extrabold text-coral-500">${s.not_found}</p><p class="text-xs text-gray-400">Tidak Ditemukan</p></div>`;
+            document.getElementById('bulkDownload').href = `/api/bulk-download/${jobId}`;
+            doneEl.classList.remove('hidden');
         }
+        if (data.status === 'error') {
+            evtSource.close();
+            document.getElementById('bulkStatus').textContent = 'Error';
+            document.getElementById('bulkStatus').className = 'text-xs font-semibold px-3 py-0.5 rounded-full bg-red-100 text-red-700';
+        }
+    };
+    evtSource.onerror = () => evtSource.close();
+}
 
-        function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-        function showLoading(m) { document.getElementById('loadingMsg').textContent=m; document.getElementById('loading').classList.remove('hidden'); }
-        function hideLoading() { document.getElementById('loading').classList.add('hidden'); }
-        function showError(m) { document.getElementById('error').classList.remove('hidden'); document.getElementById('errorMsg').textContent=m; }
-        function hideError() { document.getElementById('error').classList.add('hidden'); }
-        function showResults() { document.getElementById('searchResults').classList.remove('hidden'); }
-        function hideResults() { document.getElementById('searchResults').classList.add('hidden'); }
-    </script>
+// ============================================================
+// HELPERS
+// ============================================================
+function esc(s) { return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function renderError(msg) { return `<div class="card p-5 text-center"><p class="text-red-500 text-sm font-medium">${esc(msg)}</p></div>`; }
+</script>
 </body>
 </html>
